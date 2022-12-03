@@ -16,3 +16,11 @@
 
 ## Требования для запуска
 Все зависимости проекта указаны в файле [requirements.txt](https://github.com/dunmas/backup-project/blob/master/requirements.txt).
+
+* Для работы необходим **токен Яндекс.Диска**. Укажите его в переменной 
+**YA_TOKEN** в 
+файле [settings.py](https://github.com/dunmas/backup-project/blob/master/Settings.py). 
+
+* Помимо этого, необходим 
+**VK-токен** для возможности запросов. Он указан в этом же файле в переменной 
+**VK_TOKEN**.
