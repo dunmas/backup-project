@@ -36,7 +36,15 @@ class VkPhotos:
         :param picture: фотография, полученная структурой dict из get запроса
         :return: ссылка на загрузку фотографии
         """
-        link = ''
+        sizes_dict = dict()
+        for size in picture['sizes']:
+            sizes_dict[size['type']] = size['url']
+
+        # Размеры по возрастанию идут в алфавитном порядке, но выделяется самый большой - w
+        if 'w' in sizes_dict:
+            link = sizes_dict['w']
+        else:
+            link = sizes_dict[sorted(sizes_dict.items())[-1]]
 
         return link
 
