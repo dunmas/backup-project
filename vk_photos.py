@@ -1,18 +1,19 @@
 import requests
 
 from settings import VK_TOKEN
-
+from datetime import datetime
 
 class VkPhotos:
     """
     Класс работы с фотографиями профиля по переданному user_id
     """
-    def __init__(self, user_id, version='5.131'):
+    def __init__(self, user_id, count=5, version='5.131'):
         self.token = VK_TOKEN
         self.id = user_id
         self.photos = dict()
         self.version = version
-        self.params = {'access_token': self.token, 'v': self.version}
+        self.count = count
+        self.params = {'access_token': self.token, 'v': self.version, 'count': 5}
 
     def _make_photos_dict(self, pictures):
         """
@@ -21,7 +22,13 @@ class VkPhotos:
         :param pictures: список фотографий, полученный get запросом
         :return: none
         """
-        pass
+        result = dict()
+        for image in pictures:
+            if image['likes']['count'] in result:
+                date = datetime.utcfromtimestamp(image['date']).strftime('%Y-%m-%d')
+                result[image['likes']['count'] + date] = self._get_max_def_link(image)
+            else:
+                result[image['likes']['count']] = self._get_max_def_link(image)
 
     def _get_max_def_link(self, picture):
         """
