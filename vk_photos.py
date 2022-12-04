@@ -3,6 +3,7 @@ import requests
 from settings import VK_TOKEN
 from datetime import datetime
 
+
 class VkPhotos:
     """
     Класс работы с фотографиями профиля по переданному user_id
@@ -13,7 +14,7 @@ class VkPhotos:
         self.photos = dict()
         self.version = version
         self.count = count
-        self.params = {'access_token': self.token, 'v': self.version, 'count': 5}
+        self.params = {'access_token': self.token, 'v': self.version, 'count': count}
 
     def _make_photos_dict(self, pictures):
         """
@@ -22,13 +23,12 @@ class VkPhotos:
         :param pictures: список фотографий, полученный get запросом
         :return: none
         """
-        result = dict()
         for image in pictures:
-            if image['likes']['count'] in result:
+            if image['likes']['count'] in self.photos:
                 date = datetime.utcfromtimestamp(image['date']).strftime('%Y-%m-%d')
-                result[image['likes']['count'] + date] = self._get_max_def_link(image)
+                self.photos[image['likes']['count'] + date] = self._get_max_def_link(image)
             else:
-                result[image['likes']['count']] = self._get_max_def_link(image)
+                self.photos[image['likes']['count']] = self._get_max_def_link(image)
 
     def _get_max_def_link(self, picture):
         """
@@ -44,7 +44,7 @@ class VkPhotos:
         if 'w' in sizes_dict:
             link = sizes_dict['w']
         else:
-            link = sizes_dict[sorted(sizes_dict.items())[-1]]
+            link = sorted(sizes_dict.items())[-1][1]
 
         return link
 
@@ -60,5 +60,3 @@ class VkPhotos:
 
         #Собираем dict ссылок на фотографии с будущим названием в ключе
         self._make_photos_dict(response['response']['items'])
-
-
