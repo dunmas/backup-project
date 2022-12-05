@@ -27,7 +27,15 @@ class YaDrive:
         :param dir_name: Имя создаваемой на диске директории
         :return:
         """
-        self.drive_dir = dir_name
+        self.drive_dir = '/' + dir_name
+        uri = '/v1/disk/resources'
+        request_url = self.base_url + uri
+        test_params = {'path': self.drive_dir}
+
+        if requests.get(request_url, params=test_params, headers=self.headers).status_code == 404:
+            pass
+        else:
+            pass
 
     def _upload_photo_by_url(self, url, name):
         """
