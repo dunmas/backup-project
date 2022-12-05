@@ -10,11 +10,14 @@ class YaDrive:
 
     def upload_photos(self, photos_dict):
         """
-
+        Загружает на диск все переданные фотографии в базовую директорию
         :param photos_dict: Словарь фотографий по типу 'название': 'ссылка на фото'
         :return:
         """
-        pass
+        for photo in photos_dict:
+            self._upload_photo_by_url(photos_dict[photo], photo)
+
+        print('Готово! Бэкап сделан.')
 
 
     def _make_drive_dir(self, dir_name):
@@ -26,7 +29,7 @@ class YaDrive:
         """
         self.drive_dir = dir_name
 
-    def _upload_photo_by_url(self, url):
+    def _upload_photo_by_url(self, url, name):
         """
         Загружает на диск фото по ссылке в папку из self.drive_dir
         :param url: Ссылка на загрузку фотографии
@@ -34,7 +37,7 @@ class YaDrive:
         """
         uri = '/v1/disk/resources/upload'
         request_url = self.base_url + uri
-        params = {'url': url, 'path': self.drive_dir}
+        params = {'url': url, 'path': self.drive_dir + name}
         response = requests.post(request_url, params=params, headers=self.headers)
 
         if response.status_code == 201:
