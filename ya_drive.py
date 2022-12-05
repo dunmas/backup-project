@@ -5,7 +5,7 @@ from settings import YA_TOKEN
 class YaDrive:
     def __init__(self, dir_name='VK_Profile_Backup'):
         self.headers = {'Content-Type': 'application/json', 'Authorization': f'OAuth {YA_TOKEN}'}
-        self.base_url = 'https://cloud-api.yandex.net/'
+        self.base_url = 'https://cloud-api.yandex.net'
         self._make_drive_dir(dir_name)
 
     def upload_photos(self, photos_dict):
@@ -19,7 +19,6 @@ class YaDrive:
 
         print('Готово! Бэкап сделан.')
 
-
     def _make_drive_dir(self, dir_name):
         """
         Создаёт на Яндекс.Диске папку с названием dir_name, если такая есть - удаляет существующую и пишет
@@ -32,10 +31,17 @@ class YaDrive:
         request_url = self.base_url + uri
         test_params = {'path': self.drive_dir}
 
-        if requests.get(request_url, params=test_params, headers=self.headers).status_code == 404:
-            pass
+        response_code = requests.get(request_url, params=test_params, headers=self.headers).status_code
+
+        if response_code == 404:
+            requests.put(request_url, params=test_params, headers=self.headers)
+            print('Директория создана!')
+        #СДЕЛАТЬ(с туду не даёт закоммитить XD) спрашивать, удалять ли прошлый бэкап или писать в новую
+        # папку - если в новую, то добавить префикс ID и даты
+        elif response_code == 200:
+            print('Директория есть')
         else:
-            pass
+            print(f'Возникла ошибка обращения к серверу. Её код: {response_code}')
 
     def _upload_photo_by_url(self, url, name):
         """
