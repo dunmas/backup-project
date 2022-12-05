@@ -60,3 +60,5 @@ class VkPhotos:
 
         #Собираем dict ссылок на фотографии с будущим названием в ключе
         self._make_photos_dict(response['response']['items'])
+
+        return self.photos

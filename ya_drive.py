@@ -8,6 +8,14 @@ class YaDrive:
         self.base_url = 'https://cloud-api.yandex.net/'
         self._make_drive_dir(dir_name)
 
+    def upload_photos(self, photos_dict):
+        """
+
+        :param photos_dict: Словарь фотографий по типу 'название': 'ссылка на фото'
+        :return:
+        """
+        pass
+
 
     def _make_drive_dir(self, dir_name):
         """
@@ -18,7 +26,7 @@ class YaDrive:
         """
         self.drive_dir = dir_name
 
-    def upload_by_url(self, url):
+    def _upload_photo_by_url(self, url):
         """
         Загружает на диск фото по ссылке в папку из self.drive_dir
         :param url: Ссылка на загрузку фотографии
