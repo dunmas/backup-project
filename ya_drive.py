@@ -39,12 +39,12 @@ class YaDrive:
 
         if response_code == 404:
             response_code = requests.put(request_url, params=test_params, headers=self.headers).status_code
-            # sleep нужен, чтобы директория на сервере создалась
             if response_code == 201:
-                print('Директория создана!')
+                print('\rДиректория создана!')
         elif response_code == 200:
             counter = 1
             print('Директория с заданным именем уже существует. Пробуем создать новую...')
+
             while (response_code == 200):
                 addon = f'_{counter}'
                 test_params['path'] = self.drive_dir + addon
@@ -53,8 +53,10 @@ class YaDrive:
                 counter += 1
 
             response_code = requests.put(request_url, params=test_params, headers=self.headers).status_code
-            print(f"Новая директория бэкапа - '{self.drive_dir + addon}'") if response_code == 201 \
-                else \
+
+            if response_code == 201:
+                print(f"\rНовая директория бэкапа - '{self.drive_dir + addon}'")
+            else:
                 print(f'Возникла ошибка обращения к серверу. Её код: {response_code}')
             self.drive_dir += addon
         else:
