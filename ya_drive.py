@@ -64,7 +64,7 @@ class YaDrive:
         """
         uri = '/v1/disk/resources/upload'
         request_url = self.base_url + uri
-        params = {'url': url, 'path': self.drive_dir + name}
+        params = {'url': url, 'path': self.drive_dir + '/' + str(name)}
         response = requests.post(request_url, params=params, headers=self.headers)
 
         if response.status_code == 201:
