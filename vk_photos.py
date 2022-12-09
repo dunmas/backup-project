@@ -2,6 +2,7 @@ import requests
 
 from settings import VK_TOKEN
 from datetime import datetime
+from progress.bar import IncrementalBar
 
 
 class VkPhotos:
@@ -23,12 +24,15 @@ class VkPhotos:
         :param pictures: список фотографий, полученный get запросом
         :return: none
         """
+        bar = IncrementalBar('Сортируем ваши фото...', max=len(pictures))
         for image in pictures:
             if image['likes']['count'] in self.photos:
                 date = datetime.utcfromtimestamp(image['date']).strftime('%Y-%m-%d')
                 self.photos[image['likes']['count'] + date] = self._get_max_def_link(image)
             else:
                 self.photos[image['likes']['count']] = self._get_max_def_link(image)
+
+            bar.next()
 
     def _get_max_def_link(self, picture):
         """
