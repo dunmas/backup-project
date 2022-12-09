@@ -18,6 +18,22 @@ class VkPhotos:
         self.count = count
         self.params = {'access_token': self.token, 'v': self.version, 'count': count}
 
+    def get_profile_photos(self):
+        url = 'https://api.vk.com/method/photos.get'
+        params = {'owner_id': self.id,
+                  'album_id': 'profile',
+                  'photo_sizes': 1,
+                  'extended': 1}
+        print('Смотрим ваш профиль...')
+
+        # Получили JSON ответа сервера с фотографиями профиля - фото - response['response']['items']
+        response = requests.get(url, params={**self.params, **params}).json()
+
+        #Собираем dict ссылок на фотографии с будущим названием в ключе
+        self._make_photos_dict(response['response']['items'])
+
+        return self.photos
+
     def _make_photos_dict(self, pictures):
         """
         Функция собирает словарь из ссылок на изображениями с новым названием в ключе, где название -
@@ -50,19 +66,3 @@ class VkPhotos:
             link = sorted(sizes_dict.items())[-1][1]
 
         return link
-
-    def get_profile_photos(self):
-        url = 'https://api.vk.com/method/photos.get'
-        params = {'owner_id': self.id,
-                  'album_id': 'profile',
-                  'photo_sizes': 1,
-                  'extended': 1}
-        print('Смотрим ваш профиль...')
-
-        # Получили JSON ответа сервера с фотографиями профиля - фото - response['response']['items']
-        response = requests.get(url, params={**self.params, **params}).json()
-
-        #Собираем dict ссылок на фотографии с будущим названием в ключе
-        self._make_photos_dict(response['response']['items'])
-
-        return self.photos

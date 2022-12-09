@@ -1,6 +1,8 @@
 import requests
 
+from tqdm import tqdm
 from settings import YA_TOKEN
+
 
 class YaDrive:
     def __init__(self, dir_name='VK_Profile_Backup'):
@@ -14,7 +16,8 @@ class YaDrive:
         :param photos_dict: Словарь фотографий по типу 'название': 'ссылка на фото'
         :return:
         """
-        for photo in photos_dict:
+        print('Загружаем ваши фото на диск...')
+        for photo in tqdm(photos_dict, colour='GREEN'):
             self._upload_photo_by_url(photos_dict[photo], photo)
 
         print('Готово! Бэкап сделан.')
@@ -35,11 +38,13 @@ class YaDrive:
         response_code = requests.get(request_url, params=test_params, headers=self.headers).status_code
 
         if response_code == 404:
-            requests.put(request_url, params=test_params, headers=self.headers)
-            print('Директория создана!')
+            response_code = requests.put(request_url, params=test_params, headers=self.headers).status_code
+            # sleep нужен, чтобы директория на сервере создалась
+            if response_code == 201:
+                print('Директория создана!')
         elif response_code == 200:
             counter = 1
-
+            print('Директория с заданным именем уже существует. Пробуем создать новую...')
             while (response_code == 200):
                 addon = f'_{counter}'
                 test_params['path'] = self.drive_dir + addon
@@ -48,13 +53,13 @@ class YaDrive:
                 counter += 1
 
             response_code = requests.put(request_url, params=test_params, headers=self.headers).status_code
-            print(f"Директория с именем {self.drive_dir} уже существует. Бэкап создан в директории "
-                  f"{self.drive_dir + addon}") if response_code == 201 else print(f'Возникла ошибка обращения'
-                                                                                  f' к серверу. Её код:'
-                                                                                  f' {response_code}')
+            print(f"Новая директория бэкапа - '{self.drive_dir + addon}'") if response_code == 201 \
+                else \
+                print(f'Возникла ошибка обращения к серверу. Её код: {response_code}')
             self.drive_dir += addon
         else:
             print(f'Возникла ошибка обращения к серверу. Её код: {response_code}')
+            exit()
 
     def _upload_photo_by_url(self, url, name):
         """
