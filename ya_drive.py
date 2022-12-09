@@ -32,13 +32,13 @@ class YaDrive:
         self.drive_dir = '/' + dir_name
         uri = '/v1/disk/resources'
         request_url = self.base_url + uri
-        #  addon необходим для решения случая, если бэкап-папка с таким названием уже есть
         test_params = {'path': self.drive_dir}
 
         response_code = requests.get(request_url, params=test_params, headers=self.headers).status_code
 
         if response_code == 404:
             response_code = requests.put(request_url, params=test_params, headers=self.headers).status_code
+
             if response_code == 201:
                 print('\rДиректория создана!')
         elif response_code == 200:
@@ -46,6 +46,7 @@ class YaDrive:
             print('Директория с заданным именем уже существует. Пробуем создать новую...')
 
             while (response_code == 200):
+                # addon необходим для решения случая, если бэкап-папка с таким названием уже есть
                 addon = f'_{counter}'
                 test_params['path'] = self.drive_dir + addon
                 response_code = requests.get(request_url, params=test_params,
