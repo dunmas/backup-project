@@ -29,6 +29,7 @@ class YaDrive:
         self.drive_dir = '/' + dir_name
         uri = '/v1/disk/resources'
         request_url = self.base_url + uri
+        #  addon необходим для решения случая, если бэкап-папка с таким названием уже есть
         test_params = {'path': self.drive_dir}
 
         response_code = requests.get(request_url, params=test_params, headers=self.headers).status_code
@@ -36,10 +37,22 @@ class YaDrive:
         if response_code == 404:
             requests.put(request_url, params=test_params, headers=self.headers)
             print('Директория создана!')
-        #СДЕЛАТЬ(с туду не даёт закоммитить XD) спрашивать, удалять ли прошлый бэкап или писать в новую
-        # папку - если в новую, то добавить префикс ID и даты
         elif response_code == 200:
-            print('Директория есть')
+            counter = 1
+
+            while (response_code == 200):
+                addon = f'_{counter}'
+                test_params['path'] = self.drive_dir + addon
+                response_code = requests.get(request_url, params=test_params,
+                                             headers=self.headers).status_code
+                counter += 1
+
+            response_code = requests.put(request_url, params=test_params, headers=self.headers).status_code
+            print(f"Директория с именем {self.drive_dir} уже существует. Бэкап создан в директории "
+                  f"{self.drive_dir + addon}") if response_code == 201 else print(f'Возникла ошибка обращения'
+                                                                                  f' к серверу. Её код:'
+                                                                                  f' {response_code}')
+            self.drive_dir += addon
         else:
             print(f'Возникла ошибка обращения к серверу. Её код: {response_code}')
 
