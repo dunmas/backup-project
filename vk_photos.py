@@ -39,6 +39,9 @@ class VkPhotos:
 
         return self.photos
 
+    def _update_json_log(self, name, size):
+        pass
+
     def _make_photos_dict(self, pictures):
         """
         Функция собирает словарь из ссылок на изображениями с новым названием в ключе, где название -
@@ -50,15 +53,23 @@ class VkPhotos:
         for image in tqdm(pictures, colour='GREEN'):
             if image['likes']['count'] in self.photos:
                 date = datetime.utcfromtimestamp(image['date']).strftime('%Y-%m-%d')
-                self.photos[str(image['likes']['count']) + str(date)] = self._get_max_def_link(image)
+                name = str(image['likes']['count']) + str(date)
+                image_params = self._get_max_def_link(image)
+
+                self.photos[name] = image_params[0]
             else:
-                self.photos[image['likes']['count']] = self._get_max_def_link(image)
+                name = image['likes']['count']
+                image_params = self._get_max_def_link(image)
+
+                self.photos[name] = image_params[0]
+
+            self._update_json_log(name, image_params[1])
 
     def _get_max_def_link(self, picture):
         """
         Функция даёт ссылку на загрузку изображения в максимальном доступном качестве
         :param picture: фотография, полученная структурой dict из get запроса
-        :return: ссылка на загрузку фотографии
+        :return: список, где первый элемент - ссылка на загрузку фотографии, второй - её размер
         """
         sizes_dict = dict()
         for size in picture['sizes']:
@@ -67,7 +78,10 @@ class VkPhotos:
         # Размеры по возрастанию идут в алфавитном порядке, но выделяется самый большой - w
         if 'w' in sizes_dict:
             link = sizes_dict['w']
+            mark = 'w'
         else:
-            link = sorted(sizes_dict.items())[-1][1]
+            params = sorted(sizes_dict.items())[-1]
+            link = params[1]
+            mark = params[0]
 
-        return link
+        return [link, mark]
