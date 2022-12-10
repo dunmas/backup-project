@@ -2,6 +2,7 @@ from datetime import datetime
 
 from tqdm import tqdm
 import requests
+import json
 
 from settings import VK_TOKEN
 
@@ -17,6 +18,7 @@ class VkPhotos:
         self.version = version
         self.count = count
         self.params = {'access_token': self.token, 'v': self.version, 'count': count}
+        self.json_list = list()
 
     def get_profile_photos(self):
         url = 'https://api.vk.com/method/photos.get'
@@ -37,10 +39,14 @@ class VkPhotos:
                   'позднее.')
             exit()
 
+        self._make_backup_log()
+        self.count =len(self.photos)
+
         return self.photos
 
-    def _update_json_log(self, name, size):
-        pass
+    def _make_backup_log(self):
+        with open('./backup_log.txt', 'w') as f:
+            json.dump(self.json_list, f, ensure_ascii=False, indent=2)
 
     def _make_photos_dict(self, pictures):
         """
@@ -51,19 +57,19 @@ class VkPhotos:
         """
         print('Обрабатываем полученные фотографии...')
         for image in tqdm(pictures, colour='GREEN'):
-            if image['likes']['count'] in self.photos:
+            if str(image['likes']['count']) + '.jpg' in self.photos:
                 date = datetime.utcfromtimestamp(image['date']).strftime('%Y-%m-%d')
-                name = str(image['likes']['count']) + str(date)
+                name = str(image['likes']['count']) + "_" + str(date) + ".jpg"
                 image_params = self._get_max_def_link(image)
 
                 self.photos[name] = image_params[0]
             else:
-                name = image['likes']['count']
+                name = str(image['likes']['count']) + ".jpg"
                 image_params = self._get_max_def_link(image)
 
                 self.photos[name] = image_params[0]
 
-            self._update_json_log(name, image_params[1])
+            self.json_list.append({"file_name": name, "size": image_params[1]})
 
     def _get_max_def_link(self, picture):
         """

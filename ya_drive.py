@@ -20,7 +20,8 @@ class YaDrive:
         for photo in tqdm(photos_dict, colour='GREEN'):
             self._upload_photo_by_url(photos_dict[photo], photo)
 
-        print('Готово! Бэкап сделан.')
+        print("Готово! Бэкап сделан.\n"
+              "Лог файл 'backup_log.txt' лежит в директории проекта.")
 
     def _make_drive_dir(self, dir_name):
         """
