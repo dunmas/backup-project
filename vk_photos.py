@@ -45,7 +45,7 @@ class VkPhotos:
         for image in tqdm(pictures, colour='GREEN'):
             if image['likes']['count'] in self.photos:
                 date = datetime.utcfromtimestamp(image['date']).strftime('%Y-%m-%d')
-                self.photos[image['likes']['count'] + date] = self._get_max_def_link(image)
+                self.photos[str(image['likes']['count']) + str(date)] = self._get_max_def_link(image)
             else:
                 self.photos[image['likes']['count']] = self._get_max_def_link(image)
 

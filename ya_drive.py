@@ -40,7 +40,7 @@ class YaDrive:
             response_code = requests.put(request_url, params=test_params, headers=self.headers).status_code
 
             if response_code == 201:
-                print('\rДиректория создана!')
+                print(f"\rДиректория '{self.drive_dir[1:]}' создана!")
         elif response_code == 200:
             counter = 1
             print('Директория с заданным именем уже существует. Пробуем создать новую...')
