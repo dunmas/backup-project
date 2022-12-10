@@ -30,7 +30,12 @@ class VkPhotos:
         response = requests.get(url, params={**self.params, **params}).json()
 
         #Собираем dict ссылок на фотографии с будущим названием в ключе
-        self._make_photos_dict(response['response']['items'])
+        try:
+            self._make_photos_dict(response['response']['items'])
+        except KeyError:
+            print('Возникла ошибка при обращении к серверам VK. Проверьте введённые данные или повторите '
+                  'позднее.')
+            exit()
 
         return self.photos
 
