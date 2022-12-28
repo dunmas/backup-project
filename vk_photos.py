@@ -12,15 +12,23 @@ class VkPhotos:
     """
     Класс работы с фотографиями профиля по переданному user_id
     """
-    def __init__(self, user_id, count=5, backup_path='./backup_log.txt', version='5.131'):
+    def __init__(self, user_id, screen_name='', count=5, backup_path='./backup_log.txt', version='5.131'):
         self.token = VK_TOKEN
-        self.id = user_id
         self.photos = dict()
         self.version = version
         self.count = count
         self.params = {'access_token': self.token, 'v': self.version, 'count': count}
         self.json_list = list()
         self.backup_path = backup_path
+
+        if screen_name != '':
+            self.id = self._get_user_id()
+        else:
+            self.id = user_id
+
+    def _get_user_id(self):
+        result = ''
+        return result
 
     def get_profile_photos(self):
         url = 'https://api.vk.com/method/photos.get'
