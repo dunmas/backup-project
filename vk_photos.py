@@ -5,13 +5,14 @@ import requests
 import json
 
 from settings import VK_TOKEN
+from backup import make_backup_log
 
 
 class VkPhotos:
     """
     Класс работы с фотографиями профиля по переданному user_id
     """
-    def __init__(self, user_id, count=5, version='5.131'):
+    def __init__(self, user_id, count=5, backup_path='./backup_log.txt', version='5.131'):
         self.token = VK_TOKEN
         self.id = user_id
         self.photos = dict()
@@ -19,6 +20,7 @@ class VkPhotos:
         self.count = count
         self.params = {'access_token': self.token, 'v': self.version, 'count': count}
         self.json_list = list()
+        self.backup_path = backup_path
 
     def get_profile_photos(self):
         url = 'https://api.vk.com/method/photos.get'
@@ -39,14 +41,10 @@ class VkPhotos:
                   'позднее.')
             exit()
 
-        self._make_backup_log()
-        self.count =len(self.photos)
+        make_backup_log(self.backup_path, self.json_list)
+        self.count = len(self.photos)
 
         return self.photos
-
-    def _make_backup_log(self):
-        with open('./backup_log.txt', 'w') as f:
-            json.dump(self.json_list, f, ensure_ascii=False, indent=2)
 
     def _make_photos_dict(self, pictures):
         """
