@@ -22,13 +22,9 @@ class VkPhotos:
         self.backup_path = backup_path
 
         if screen_name != '':
-            self.id = self._get_user_id()
+            self.id = self._get_user_id(screen_name)
         else:
             self.id = user_id
-
-    def _get_user_id(self):
-        result = ''
-        return result
 
     def get_profile_photos(self):
         url = 'https://api.vk.com/method/photos.get'
@@ -53,6 +49,19 @@ class VkPhotos:
         self.count = len(self.photos)
 
         return self.photos
+
+    def _get_user_id(self, screen_name):
+        url = 'https://api.vk.com/method/utils.resolveScreenName'
+
+        # Получаем JSON ответа сервера - ID лежит в response['response']['object_id']
+        response = requests.get(url, params={**self.params, 'screen_name': screen_name}).json()
+
+        if response['response']:
+            return response['response']['object_id']
+        else:
+            print('Возникла ошибка при получении ID по введённому screen_name. Проверьте введённые данные '
+                  'или повторите позднее.')
+            exit()
 
     def _make_photos_dict(self, pictures):
         """
